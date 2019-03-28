@@ -1,6 +1,7 @@
-// After page loads everything inside runs
+// Loads Page
 window.addEventListener("load", () => {
-  let long; // variables
+  // Defining coordinates
+  let long;
   let lat;
   let temperatureDescription = document.querySelector(
     ".temperature-description"
@@ -13,11 +14,11 @@ window.addEventListener("load", () => {
     navigator.geolocation.getCurrentPosition(position => {
       long = position.coords.longitude;
       lat = position.coords.latitude;
-      // Allows you to make request from local host
+      // Allows you to make request from local host environment
       const proxy = "https://cors-anywhere.herokuapp.com/";
 
       // API where Im pulling from
-      const api = `${proxy}https://api.darksky.net/forecast/e8acb65fbe580d2df623ccee27c5de07/${lat},${long}`;
+      const api = `${proxy}https://api.darksky.net/forecast/7b060ecec9d2f78b271f2c2e5084c5db/${lat},${long}`;
 
       // Gets API above
       fetch(api)
@@ -28,14 +29,22 @@ window.addEventListener("load", () => {
         })
         // Returns data
         .then(data => {
-          console.log(data);
           // Pulls out temperature, summary from data.currently
-          const { temperature, summary } = data.currently;
+          const { temperature, summary, icon } = data.currently;
           // Set DOM Elements from the API
           temperatureDegree.textContent = temperature;
           temperatureDescription.textContent = summary;
           locationTimezone.textContent = data.timezone;
+          // Set Icon
+          setIcons(icon, document.querySelector(".icon"));
         });
     });
+  }
+
+  function setIcons(icon, iconID) {
+    const skycons = new Skycons({ color: "white" });
+    const currentIcon = icon.replace(/-/g, "_").toUpperCase(); // replaces every - with _
+    skycons.play();
+    return skycons.set(iconID, Skycons[currentIcon]);
   }
 });
